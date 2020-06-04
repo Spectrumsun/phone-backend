@@ -38,12 +38,12 @@ class Phone {
       seller: await SellRequest.paginate(query(queryObject), options),
     };
 
-    const getCars = await getPhone[type];
+    const phones = await getPhone[type];
 
     res.status(200).json({
       message: "success",
       type,
-      getCars,
+      phones,
     });
   }
 }
