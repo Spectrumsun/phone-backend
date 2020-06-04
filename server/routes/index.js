@@ -8,8 +8,6 @@ router.get("/", controller.welcome);
 
 router.get("/phones", controller.getAllPhones);
 
-// router.get("/search", controller.searchCars);
-
 router.use("*", (req, res) =>
   res.status(404).json({
     message: "That url does not exist on this server 🙅 🚫 🙅 🚫 🙅 🚫 🙅 🚫",
@@ -17,4 +15,3 @@ router.use("*", (req, res) =>
 );
 
 export default router;
-

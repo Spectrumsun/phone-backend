@@ -46,27 +46,6 @@ class Phone {
       getCars,
     });
   }
-
-  // static async searchCars(req, res) {
-  //   const { start, end, gender, countries, color } = req.query;
-  //   try {
-  //     const carResults = await models.Car.findAll({
-  //       where: {
-  //         car_model_year: {
-  //           [Op.between]: [start, end],
-  //         },
-  //         gender: `${gender}`,
-  //         car_color: { [Op.iLike]: `%${color}%` },
-  //         country: { [Op.iLike]: `%${countries}%` },
-  //       },
-  //       order: [["createdAt", "DESC"]],
-  //     });
-  //     return res.status(200).json({ message: "Success", carResults });
-  //   } catch (error) {
-  //     console.log(error);
-  //     return res.status(400).json({ message: "Fail", error });
-  //   }
-  // }
 }
 
 export default Phone;
