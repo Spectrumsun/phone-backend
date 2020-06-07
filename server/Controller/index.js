@@ -94,7 +94,6 @@ class Phone {
       searchPhrase: searchData.searchString,
       limit: searchData.limit,
       page: searchData.page,
-      // totalDocs: totalDocs,
       type: searchData.type,
     };
   }
