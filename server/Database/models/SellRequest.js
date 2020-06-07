@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import mongoosePaginate from "mongoose-paginate-v2";
+
 
 const sellRequestSchema = new mongoose.Schema(
   {
@@ -40,5 +40,5 @@ sellRequestSchema.index({
   condition: "text",
 });
 
-sellRequestSchema.plugin(mongoosePaginate);
+
 module.exports = mongoose.model("SellRequest", sellRequestSchema);

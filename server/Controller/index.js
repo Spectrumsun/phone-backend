@@ -8,58 +8,108 @@ class Phone {
 
   static async getAllPhones(req, res) {
     const { type, limit, page, min, max, searchString } = req.query;
-    const options = {
-      page: Number(page) || 1,
-      limit: Number(limit) || 5,
-    };
 
     const query = {
       price: { $gte: min, $lte: max },
     };
 
+    // const queryData = {
+    //   searchWord: {
+    //     query: {
+    //       $text: { $search: searchString },
+    //       score: { $meta: "textScore" },
+    //     },
+    //     sort: { score: { $meta: "textScore" } },
+    //   },
+    //   filterPrice: {
+    //     query: {
+    //       price: { $gte: min, $lte: max },
+    //     },
+    //     sort: { field_key: -1 },
+    //   },
+    // };
+
+    // if (queryData.filterPrice.query.price["$gte"] === undefined)
+    //   delete queryData.filterPrice.query.price;
+
     if (query.price["$gte"] === undefined) delete query.price;
 
-    const searchFunction = async (searchPhrase, type) => {
-      const getPhone = {
-        buyer:  BuyRequest,
-        seller:  SellRequest,
-      };
-
-      const search = await getPhone[type].find(
-        { $text: { $search: searchString } },
-        { score: { $meta: "textScore" } }
-      )
-        .sort({ score: { $meta: "textScore" } })
-        .skip(options.page * options.limit)
-        .limit(options.limit);
-
-      const total = await getPhone[type].countDocuments();
-      return {
-        docs: search,
-        totalPages: total / limit,
-        searchPhrase: searchPhrase,
-        limit: limit,
-        page: page,
-        totalDocs: total,
-      };
+    const values = {
+      type,
+      limit: Number(limit) || 5,
+      page: Number(page) || 1,
+      searchString,
+      query,
     };
-
-    const getPhone = {
-      buyer: await BuyRequest.paginate(query, options),
-      seller: await SellRequest.paginate(query, options),
-    };
-
-    const phones = await getPhone[type];
 
     const phoneData = searchString
-      ? await searchFunction(searchString, type)
-      : phones;
+      ? await Phone.searchFunction(values)
+      : await Phone.filterPriceSearch(values);
 
-    res.status(200).json({
-      message: "success",
-      type,
-      phones: phoneData,
+    return res.status(200).json({
+      phoneData,
     });
+  }
+
+  static async searchFunction(searchData) {
+    const getPhone = { buyer: BuyRequest, seller: SellRequest };
+    const search = await getPhone[searchData.type]
+      .find(
+        { $text: { $search: searchData.searchString } },
+        { score: { $meta: "textScore" } }
+      )
+      .skip((searchData.page - 1) * searchData.limit)
+      .limit(searchData.limit * 1)
+      .sort({ score: { $meta: "textScore" } });
+
+    const totalResult = await getPhone[searchData.type]
+      .find(
+        { $text: { $search: searchData.searchString } },
+        { score: { $meta: "textScore" } }
+      )
+      .countDocuments();
+    return Phone.handleResponse(search, totalResult, searchData);
+  }
+
+  static async filterPriceSearch(searchData) {
+    const getPhone = { buyer: BuyRequest, seller: SellRequest };
+    const phone = await getPhone[searchData.type]
+      .find(searchData.query)
+      .skip((searchData.page - 1) * searchData.limit)
+      .limit(searchData.limit * 1)
+      .sort({ field_key: -1 });
+
+    const totalResult = await getPhone[searchData.type]
+      .find(searchData.query)
+      .countDocuments();
+
+    return Phone.handleResponse(phone, totalResult, searchData);
+  }
+
+  // static async filterAndSearch(searchData, queryValue) {
+  //   const getPhone = { buyer: BuyRequest, seller: SellRequest };
+  //   console.log(queryValue.query,'queryValue.query queryValue.query')
+  //   const phone = await getPhone[searchData.type]
+  //     .find({...queryValue.query})
+  //     .skip((searchData.page - 1) * searchData.limit)
+  //     .limit(searchData.limit * 1)
+  //     // .sort(queryValue.sort);
+
+  //   const totalDocs = await Phone.paginateFunction(getPhone[searchData.type]);
+  //   return Phone.handleResponse(phone, totalDocs, searchData);
+  // }
+
+  static handleResponse(search, totalResult, searchData) {
+    return {
+      message: "success",
+      docs: search,
+      totalPages: Math.ceil(totalResult / searchData.limit),
+      searchPhrase: searchData.searchString,
+      limit: searchData.limit,
+      page: searchData.page,
+      // totalDocs: totalDocs,
+      type: searchData.type,
+    };
   }
 }
 
