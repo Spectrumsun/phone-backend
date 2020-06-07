@@ -34,7 +34,7 @@ A simple web application to search and buy phones
   * open terminal inside root directory of cloned folder
   * type yarn to install all dependencies
   * type yarn seed to seed database
-  * create a .env file and add the DATABASE with your mongoDB database URL it
+  * create a .env file and add the DATABASE with your mongoDB database URL to it
   * yarn start to run the app
 
 
