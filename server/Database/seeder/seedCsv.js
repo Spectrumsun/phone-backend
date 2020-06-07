@@ -9,21 +9,16 @@ import connectDatabase from "../index";
 
 connectDatabase();
 
-const fileArray = ["SellRequest.csv"];
+const fileArray = "BuyRequest.csv";
 
 
 const insertFile = (fileName) => {
   const filePath = path.resolve(__dirname, fileName);
-  const file = fileName.split('.')[0]
   fs.readFile(filePath, async (error, data) => {
     if (error) return console.log("error reading file", error);
     const parsedData = await neatCsv(data);
-    // const getPhoneModel = {
-    //   BuyRequest: await BuyRequest.insertMany(parsedData),
-    //   SellRequest: await SellRequest.insertMany(parsedData),
-    // };
     try {
-      const insertData = await SellRequest.insertMany(parsedData)
+      const insertData = await BuyRequest.insertMany(parsedData)
       console.log(insertData)
       mongoose.disconnect();
     } catch (error) {
@@ -33,4 +28,6 @@ const insertFile = (fileName) => {
   });
 };
 
-fileArray.forEach(async (fileArray) => await insertFile(fileArray));
+
+
+insertFile(fileArray)

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import mongoosePaginate from 'mongoose-paginate-v2';
+import mongoosePaginate from "mongoose-paginate-v2";
 
-const buyRequestSchema= new mongoose.Schema(
+const buyRequestSchema = new mongoose.Schema(
   {
     id: {
       type: Number,
@@ -34,5 +34,11 @@ const buyRequestSchema= new mongoose.Schema(
   { timestamps: true }
 );
 
+buyRequestSchema.index({
+  phone_name: "text",
+  storage: "text",
+  condition: "text",
+});
+
 buyRequestSchema.plugin(mongoosePaginate);
-module.exports = mongoose.model('BuyRequest', buyRequestSchema);
+module.exports = mongoose.model("BuyRequest", buyRequestSchema);

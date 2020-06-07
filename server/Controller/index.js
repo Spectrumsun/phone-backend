@@ -7,43 +7,58 @@ class Phone {
   }
 
   static async getAllPhones(req, res) {
-    const { type, limit, page, name, condition, storage, min, max } = req.query;
-    const queryObject = {
-      phone_name: new RegExp(`^${name}$`, "i"),
-      condition: new RegExp(`^${condition}$`, "i"),
-      storage: new RegExp(`^${storage}$`, "i"),
+    const { type, limit, page, min, max, searchString } = req.query;
+    const options = {
+      page: Number(page) || 1,
+      limit: Number(limit) || 5,
+    };
+
+    const query = {
       price: { $gte: min, $lte: max },
     };
 
-    const query = (queryObject) => {
-      const removeUndefined = Object.entries(queryObject).reduce(
-        (checkObject, [key, value]) =>
-          value.toString() === "/^undefined$/i"
-            ? checkObject
-            : ((checkObject[key] = value), checkObject),
-        {}
-      );
-      if (removeUndefined.price["$gte"] === undefined) {
-        delete removeUndefined.price;
-      }
-      return removeUndefined;
+    if (query.price["$gte"] === undefined) delete query.price;
+
+    const searchFunction = async (searchPhrase, type) => {
+      const getPhone = {
+        buyer:  BuyRequest,
+        seller:  SellRequest,
+      };
+
+      const search = await getPhone[type].find(
+        { $text: { $search: searchString } },
+        { score: { $meta: "textScore" } }
+      )
+        .sort({ score: { $meta: "textScore" } })
+        .skip(options.page * options.limit)
+        .limit(options.limit);
+
+      const total = await getPhone[type].countDocuments();
+      return {
+        docs: search,
+        totalPages: total,
+        searchPhrase: searchPhrase,
+        limit: limit,
+        page: page,
+        totalDocs: "",
+      };
     };
 
-    const options = {
-      page: page || 1,
-      limit: limit || 5,
-    };
     const getPhone = {
-      buyer: await BuyRequest.paginate(query(queryObject), options),
-      seller: await SellRequest.paginate(query(queryObject), options),
+      buyer: await BuyRequest.paginate(query, options),
+      seller: await SellRequest.paginate(query, options),
     };
 
     const phones = await getPhone[type];
 
+    const phoneData = searchString
+      ? await searchFunction(searchString, type)
+      : phones;
+
     res.status(200).json({
       message: "success",
       type,
-      phones,
+      phones: phoneData,
     });
   }
 }

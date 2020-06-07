@@ -34,5 +34,11 @@ const sellRequestSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+sellRequestSchema.index({
+  phone_name: "text",
+  storage: "text",
+  condition: "text",
+});
+
 sellRequestSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model("SellRequest", sellRequestSchema);
