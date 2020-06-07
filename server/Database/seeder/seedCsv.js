@@ -5,29 +5,27 @@ import mongoose from "mongoose";
 import BuyRequest from "../models/BuyRequest";
 import SellRequest from "../models/SellRequest";
 import "dotenv/config";
-import connectDatabase from "../index";
 
-connectDatabase();
-
-const fileArray = "SellRequest.csv";
-
-
-const insertFile = (fileName) => {
-  const filePath = path.resolve(__dirname, fileName);
-  fs.readFile(filePath, async (error, data) => {
-    if (error) return console.log("error reading file", error);
-    const parsedData = await neatCsv(data);
+const insertFile = async () => {
+  const filesName = ["SellRequest.csv", "BuyRequest.csv"].map(async (file) => {
+    const splitFileName = file.split(".")[0];
+    console.log(`Ruuning seed.... for ${splitFileName}`);
+    const getModal = {
+      BuyRequest: BuyRequest,
+      SellRequest: SellRequest,
+    };
     try {
-      const insertData = await SellRequest.insertMany(parsedData)
-      console.log(insertData)
-      mongoose.disconnect();
+      const filePath = path.resolve(__dirname, file);
+      const readFile = fs.readFileSync(filePath, "utf8");
+      const parsedData = await neatCsv(readFile);
+      const inserFiles = await getModal[splitFileName].insertMany(parsedData);
+      console.log(inserFiles)
+      return inserFiles;
     } catch (error) {
-      console.log(`${error} An error ocurred`);
-      mongoose.disconnect();
+      return error;
     }
   });
+  return filesName;
 };
 
-
-
-insertFile(fileArray)
+export default insertFile;

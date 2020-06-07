@@ -1,5 +1,6 @@
 import BuyRequest from "../Database/models/BuyRequest";
 import SellRequest from "../Database/models/SellRequest";
+import seeder from "../Database/seeder/seedCsv.js";
 
 class Phone {
   static welcome(req, res) {
@@ -12,25 +13,6 @@ class Phone {
     const query = {
       price: { $gte: min, $lte: max },
     };
-
-    // const queryData = {
-    //   searchWord: {
-    //     query: {
-    //       $text: { $search: searchString },
-    //       score: { $meta: "textScore" },
-    //     },
-    //     sort: { score: { $meta: "textScore" } },
-    //   },
-    //   filterPrice: {
-    //     query: {
-    //       price: { $gte: min, $lte: max },
-    //     },
-    //     sort: { field_key: -1 },
-    //   },
-    // };
-
-    // if (queryData.filterPrice.query.price["$gte"] === undefined)
-    //   delete queryData.filterPrice.query.price;
 
     if (query.price["$gte"] === undefined) delete query.price;
 
@@ -96,6 +78,24 @@ class Phone {
       page: searchData.page,
       type: searchData.type,
     };
+  }
+
+  static async updateDBFromExcel(req, res) {
+    try {
+      console.log("them click me");
+      const seedFile = await seeder();
+      res.status(200).json({
+        message: "success",
+        seedFile,
+        data: "Database updated Succesfully",
+      });
+    } catch (error) {
+      res.status(400).json({
+        message: "failure",
+        error,
+        data: "Database updated Failed",
+      });
+    }
   }
 }
 

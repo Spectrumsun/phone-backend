@@ -2,11 +2,14 @@ import express from "express";
 import "dotenv/config";
 import controller from "../Controller";
 
+
 const router = express.Router();
 
 router.get("/", controller.welcome);
 
 router.get("/phones", controller.getAllPhones);
+
+router.get("/runseed", controller.updateDBFromExcel);
 
 router.use("*", (req, res) =>
   res.status(404).json({
