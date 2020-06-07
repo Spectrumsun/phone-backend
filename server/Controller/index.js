@@ -36,11 +36,11 @@ class Phone {
       const total = await getPhone[type].countDocuments();
       return {
         docs: search,
-        totalPages: total,
+        totalPages: total / limit,
         searchPhrase: searchPhrase,
         limit: limit,
         page: page,
-        totalDocs: "",
+        totalDocs: total,
       };
     };
 
