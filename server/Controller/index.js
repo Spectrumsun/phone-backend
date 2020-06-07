@@ -86,19 +86,6 @@ class Phone {
     return Phone.handleResponse(phone, totalResult, searchData);
   }
 
-  // static async filterAndSearch(searchData, queryValue) {
-  //   const getPhone = { buyer: BuyRequest, seller: SellRequest };
-  //   console.log(queryValue.query,'queryValue.query queryValue.query')
-  //   const phone = await getPhone[searchData.type]
-  //     .find({...queryValue.query})
-  //     .skip((searchData.page - 1) * searchData.limit)
-  //     .limit(searchData.limit * 1)
-  //     // .sort(queryValue.sort);
-
-  //   const totalDocs = await Phone.paginateFunction(getPhone[searchData.type]);
-  //   return Phone.handleResponse(phone, totalDocs, searchData);
-  // }
-
   static handleResponse(search, totalResult, searchData) {
     return {
       message: "success",
