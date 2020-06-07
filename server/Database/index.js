@@ -9,7 +9,7 @@ const connectDatabase = async () => {
       if (err) {
         console.log("Cannot connect to the database");
       } else {
-        console.log("Connect to the database");
+        console.log("Connected to the database");
       }
     }
   );

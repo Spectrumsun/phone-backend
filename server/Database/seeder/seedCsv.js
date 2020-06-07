@@ -9,7 +9,7 @@ import connectDatabase from "../index";
 
 connectDatabase();
 
-const fileArray = "BuyRequest.csv";
+const fileArray = "SellRequest.csv";
 
 
 const insertFile = (fileName) => {
@@ -18,7 +18,7 @@ const insertFile = (fileName) => {
     if (error) return console.log("error reading file", error);
     const parsedData = await neatCsv(data);
     try {
-      const insertData = await BuyRequest.insertMany(parsedData)
+      const insertData = await SellRequest.insertMany(parsedData)
       console.log(insertData)
       mongoose.disconnect();
     } catch (error) {
