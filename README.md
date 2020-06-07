@@ -1,5 +1,3 @@
-
-
 # Phone 
 A simple web application to search and buy phones
 
